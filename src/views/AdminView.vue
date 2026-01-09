@@ -211,17 +211,19 @@ const saveChanges = async () => {
     triggerToast('✨ Changes saved to Cloud!');
 };
 
-// Social Icons Preset
+// Social Icons Preset - Using Material Symbols that best represent each platform
 const iconPresets = [
-    { label: 'Facebook', icon: 'public' },
+    { label: 'Facebook', icon: 'group' },
     { label: 'Instagram', icon: 'photo_camera' },
-    { label: 'LinkedIn', icon: 'group' },
+    { label: 'LinkedIn', icon: 'work' },
     { label: 'TikTok', icon: 'music_note' },
-    { label: 'YouTube', icon: 'smart_display' },
+    { label: 'YouTube', icon: 'play_circle' },
+    { label: 'Twitter/X', icon: 'chat_bubble' },
+    { label: 'GitHub', icon: 'code' },
     { label: 'Website', icon: 'language' },
-    { label: 'Mail', icon: 'mail' },
-    { label: 'Link', icon: 'link' },
-    { label: 'Camera', icon: 'camera' }
+    { label: 'Email', icon: 'mail' },
+    { label: 'Phone', icon: 'call' },
+    { label: 'Link', icon: 'link' }
 ];
 
 const addSocialLink = () => {
@@ -492,10 +494,11 @@ const removeSocialLink = (idx: number) => {
                              <div class="flex items-center justify-between">
                                  <div class="flex flex-wrap gap-2">
                                      <button v-for="preset in iconPresets" :key="preset.icon" 
-                                             @click="link.icon = preset.icon"
-                                             :class="['size-8 rounded-lg flex items-center justify-center transition-all', link.icon === preset.icon ? 'bg-primary text-white scale-110 shadow-md' : 'bg-white text-primary/40 hover:bg-white/80']"
+                                             type="button"
+                                             @click.prevent="link.icon = preset.icon"
+                                             :class="['size-10 rounded-xl flex items-center justify-center transition-all border-2', link.icon === preset.icon ? 'bg-primary text-white scale-110 shadow-md border-primary' : 'bg-white text-primary/40 hover:bg-primary/10 border-transparent hover:border-primary/20']"
                                              :title="preset.label">
-                                         <span class="material-symbols-outlined text-lg">{{ preset.icon }}</span>
+                                         <span class="material-symbols-outlined text-xl">{{ preset.icon }}</span>
                                      </button>
                                  </div>
                                  <button @click="removeSocialLink(idx)" class="text-red-400 hover:text-red-600">
