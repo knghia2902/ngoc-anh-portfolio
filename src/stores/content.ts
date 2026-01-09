@@ -19,7 +19,7 @@ export const contentStore = reactive({
         visitors: 0 // Will be tracked via analytics
     },
     toolkit: [
-        { icon: 'palette', label: 'UI Design' },
+        { icon: 'palette', label: 'UI Design', tool: '/tools' },
         { icon: 'brush', label: 'Illustration' },
         { icon: 'search', label: 'UX Research' },
         { icon: 'bolt', label: 'Prototyping' },

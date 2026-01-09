@@ -38,7 +38,8 @@ export const ContentService = {
             if (toolsData) {
                 contentStore.toolkit = toolsData.map((t: any) => ({
                     icon: t.icon,
-                    label: t.label
+                    label: t.label,
+                    tool: t.tool
                 }));
             }
 

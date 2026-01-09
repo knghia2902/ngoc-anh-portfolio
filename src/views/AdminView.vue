@@ -25,7 +25,7 @@ const newProject = ref({ id: '', title: '', description: '', tag: '', image: '' 
 
 // Toolkit Editor State
 const showToolkitConfig = ref(false);
-const newTool = ref({ icon: '', label: '' });
+const newTool = ref({ icon: '', label: '', tool: '' });
 
 // Notification
 const showToast = ref(false);
@@ -152,7 +152,7 @@ const addTool = async () => {
     if (newTool.value.label && newTool.value.icon) {
         await ContentService.addTool({ ...newTool.value });
         contentStore.toolkit.push({ ...newTool.value });
-        newTool.value = { icon: '', label: '' };
+        newTool.value = { icon: '', label: '', tool: '' };
         triggerToast('Tool added!');
     }
 };
@@ -438,10 +438,11 @@ const removeSocialLink = (idx: number) => {
                              </div>
                              
                              <div v-if="showToolkitConfig" class="mt-4 pt-4 border-t border-dashed border-gray-200 space-y-2">
-                                 <input v-model="newTool.icon" placeholder="Icon (e.g. brush)" class="w-full text-xs bg-gray-50 p-2 rounded-lg" />
-                                 <div class="flex gap-2">
+                                 <div class="flex flex-col gap-2">
+                                     <input v-model="newTool.icon" placeholder="Icon (e.g. brush)" class="w-full text-xs bg-gray-50 p-2 rounded-lg" />
                                      <input v-model="newTool.label" placeholder="Label" class="w-full text-xs bg-gray-50 p-2 rounded-lg" />
-                                     <button @click="addTool" class="bg-primary text-white text-xs px-3 rounded-lg font-bold">+</button>
+                                     <input v-model="newTool.tool" placeholder="Tool Path (e.g. /tools)" class="w-full text-xs bg-gray-50 p-2 rounded-lg" />
+                                     <button @click="addTool" class="bg-primary text-white py-2 rounded-lg font-bold text-xs">+ Add Tool</button>
                                  </div>
                                  <p class="text-[10px] opacity-60 text-center"><a href="https://fonts.google.com/icons" target="_blank" class="underline">Find Icons Here</a></p>
                              </div>
