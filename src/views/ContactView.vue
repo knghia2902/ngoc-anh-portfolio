@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { contentStore } from '../stores/content';
+import { ContentService } from '../services/ContentService';
 
 const name = ref('');
 const email = ref('');
@@ -8,29 +9,34 @@ const message = ref('');
 const isSubmitting = ref(false);
 const sentSuccess = ref(false);
 
-const sendMessage = () => {
+const sendMessage = async () => {
     isSubmitting.value = true;
     
-    // Simulate API delay
-    setTimeout(() => {
-        contentStore.messages.unshift({
-            id: Date.now(),
-            name: name.value,
-            email: email.value,
-            content: message.value,
-            date: new Date().toISOString()
-        });
+    // Send to Supabase
+    const msg = {
+        name: name.value,
+        email: email.value,
+        content: message.value,
+        date: new Date().toISOString()
+    };
+
+    const success = await ContentService.sendMessage(msg);
+    
+    if (success) {
+        // Update local store immediately for UI feedback
+        // We'll trust Supabase ID generation or refresh, but for now just pushing to list
+        // Ideally we should reload messages or get the returned ID
+        contentStore.messages.unshift({ ...msg, id: Date.now() }); // Temporary ID until reload
         
-        // Reset form
         name.value = '';
         email.value = '';
         message.value = '';
-        
-        isSubmitting.value = false;
         sentSuccess.value = true;
-        
         setTimeout(() => sentSuccess.value = false, 5000);
-    }, 1000);
+    } else {
+        alert('Failed to send message. Please try again.');
+    }
+    isSubmitting.value = false;
 };
 </script>
 

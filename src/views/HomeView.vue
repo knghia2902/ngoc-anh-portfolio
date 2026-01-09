@@ -84,12 +84,12 @@ import { contentStore } from '../stores/content';
              </router-link>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 px-4">
-            <div v-for="(project, index) in contentStore.projects" :key="index" class="bg-white rounded-[2.5rem] p-6 pb-8 text-center border border-primary/5 hover:-translate-y-2 transition-transform duration-300 shadow-sm hover:shadow-xl">
-                 <!-- Blob Masked Image -->
-                <div class="relative size-full aspect-[4/3] rounded-[2rem] overflow-hidden mb-6 flex items-center justify-center">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
+            <div v-for="(project, index) in contentStore.projects" :key="index" class="bg-white rounded-[2rem] p-4 pb-6 text-center border border-primary/5 hover:-translate-y-2 transition-transform duration-300 shadow-sm hover:shadow-xl flex flex-col items-center">
+                 <!-- Blob Masked Image - reduced size -->
+                <div class="relative w-full aspect-square rounded-[1.5rem] overflow-hidden mb-4 flex items-center justify-center">
                      <div class="absolute inset-0 bg-pastel-peach/10"></div>
-                     <div class="size-[280px] blob-shape overflow-hidden bg-cover bg-center border-4 border-white shadow-lg mx-auto" :style="{ backgroundImage: `url(${project.image})` }"></div>
+                     <div class="size-[220px] blob-shape overflow-hidden bg-cover bg-center border-4 border-white shadow-lg" :style="{ backgroundImage: `url(${project.image})` }"></div>
                 </div>
                 
                 <!-- Tag -->

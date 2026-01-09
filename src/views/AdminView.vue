@@ -471,8 +471,16 @@ const saveChanges = async () => {
                      <input v-model="newProject.title" class="w-full bg-background-light rounded-2xl p-4 font-bold" placeholder="Title" />
                      <input v-model="newProject.tag" class="w-full bg-background-light rounded-2xl p-4 font-bold" placeholder="Tag" />
                      <textarea v-model="newProject.description" class="w-full bg-background-light rounded-2xl p-4" rows="3" placeholder="Desc..."></textarea>
+                     
+                     <!-- Image Preview -->
+                     <div v-if="newProject.image" class="w-full h-40 rounded-2xl bg-cover bg-center border-2 border-primary/20 relative group overflow-hidden">
+                         <div class="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
+                         <div class="absolute bottom-2 right-2 bg-white/90 px-2 py-1 rounded-lg text-xs font-bold shadow-sm">Preview</div>
+                         <div class="size-full bg-cover bg-center" :style="{ backgroundImage: `url(${newProject.image})` }"></div>
+                     </div>
+
                      <input type="file" ref="projectFileInput" accept="image/*" class="hidden" @change="handleProjectImageUpload" />
-                     <div class="flex items-center gap-4"><button @click="triggerProjectImageUpload" class="text-primary font-bold text-sm">Upload Cover</button></div>
+                     <div class="flex items-center gap-4"><button @click="triggerProjectImageUpload" class="text-primary font-bold text-sm flex items-center gap-2"><span class="material-symbols-outlined">image</span> Upload Cover</button></div>
                      <button @click="addProject" class="w-full bg-primary text-white py-4 rounded-full font-bold mt-4">{{ isEditingProject ? 'Save Changes' : 'Create' }}</button>
                 </div>
             </div>
