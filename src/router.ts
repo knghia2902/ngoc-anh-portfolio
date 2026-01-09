@@ -45,6 +45,11 @@ const router = createRouter({
             path: '/change-password',
             name: 'change-password',
             component: ChangePasswordView
+        },
+        {
+            path: '/test-converter',
+            name: 'test-converter',
+            component: () => import('./views/TestConverterView.vue')
         }
     ]
 })
