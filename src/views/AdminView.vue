@@ -210,6 +210,27 @@ const saveChanges = async () => {
     await ContentService.saveAll();
     triggerToast('✨ Changes saved to Cloud!');
 };
+
+// Social Icons Preset
+const iconPresets = [
+    { label: 'Facebook', icon: 'public' },
+    { label: 'Instagram', icon: 'photo_camera' },
+    { label: 'LinkedIn', icon: 'group' },
+    { label: 'TikTok', icon: 'music_note' },
+    { label: 'YouTube', icon: 'smart_display' },
+    { label: 'Website', icon: 'language' },
+    { label: 'Mail', icon: 'mail' },
+    { label: 'Link', icon: 'link' },
+    { label: 'Camera', icon: 'camera' }
+];
+
+const addSocialLink = () => {
+    contentStore.about.social.push({ platform: 'New Link', url: '', icon: 'link' });
+};
+
+const removeSocialLink = (idx: number) => {
+    contentStore.about.social.splice(idx, 1);
+};
 </script>
 
 <template>
@@ -441,12 +462,57 @@ const saveChanges = async () => {
                 </div>
             </div>
             
-             <div v-if="currentTab === 'about'" class="max-w-xl mx-auto bg-white rounded-[2rem] p-8 soft-shadow border border-primary/5 space-y-4">
-                 <h3 class="text-xl font-bold text-center mb-6">Contact Info</h3>
-                 <input v-model="contentStore.about.email" class="w-full bg-background-light p-4 rounded-2xl font-bold text-sm" placeholder="Email"/>
-                 <input v-model="contentStore.about.social.facebook" class="w-full bg-background-light p-4 rounded-2xl font-bold text-sm" placeholder="Facebook"/>
-                 <input v-model="contentStore.about.social.instagram" class="w-full bg-background-light p-4 rounded-2xl font-bold text-sm" placeholder="Instagram"/>
-                 <button @click="saveChanges" class="w-full bg-primary text-white py-3 rounded-xl font-bold mt-4">Save</button>
+             <div v-if="currentTab === 'about'" class="max-w-2xl mx-auto space-y-6">
+                 <!-- Main Email -->
+                 <div class="bg-white rounded-[2rem] p-8 soft-shadow border border-primary/5">
+                     <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                         <span class="material-symbols-outlined text-primary">mail</span> Primary Email
+                     </h3>
+                     <input v-model="contentStore.about.email" class="w-full bg-background-light p-4 rounded-2xl font-bold text-sm border-none focus:ring-2 focus:ring-primary/20" placeholder="Display email..."/>
+                 </div>
+
+                 <!-- Social Links -->
+                 <div class="bg-white rounded-[2rem] p-8 soft-shadow border border-primary/5">
+                     <div class="flex justify-between items-center mb-6">
+                         <h3 class="text-lg font-bold flex items-center gap-2 text-[#1b0d11]">
+                             <span class="material-symbols-outlined text-primary">share</span> Social Links
+                         </h3>
+                         <button @click="addSocialLink" class="text-primary text-sm font-bold flex items-center gap-1 hover:underline">
+                             <span class="material-symbols-outlined text-sm">add</span> Add New
+                         </button>
+                     </div>
+
+                     <div class="space-y-4">
+                         <div v-for="(link, idx) in contentStore.about.social" :key="idx" class="p-4 bg-background-light rounded-[2rem] border border-primary/5">
+                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                 <input v-model="link.platform" class="bg-white p-3 rounded-xl font-bold text-xs" placeholder="Platform Name (e.g. Facebook)"/>
+                                 <input v-model="link.url" class="bg-white p-3 rounded-xl font-bold text-xs" placeholder="URL Link"/>
+                             </div>
+                             
+                             <div class="flex items-center justify-between">
+                                 <div class="flex flex-wrap gap-2">
+                                     <button v-for="preset in iconPresets" :key="preset.icon" 
+                                             @click="link.icon = preset.icon"
+                                             :class="['size-8 rounded-lg flex items-center justify-center transition-all', link.icon === preset.icon ? 'bg-primary text-white scale-110 shadow-md' : 'bg-white text-primary/40 hover:bg-white/80']"
+                                             :title="preset.label">
+                                         <span class="material-symbols-outlined text-lg">{{ preset.icon }}</span>
+                                     </button>
+                                 </div>
+                                 <button @click="removeSocialLink(idx)" class="text-red-400 hover:text-red-600">
+                                     <span class="material-symbols-outlined">delete</span>
+                                 </button>
+                             </div>
+                         </div>
+                         
+                         <div v-if="contentStore.about.social.length === 0" class="text-center py-6 opacity-30 text-xs font-bold italic">
+                             No social links added yet. Click "Add New" to begin.
+                         </div>
+                     </div>
+
+                     <button @click="saveChanges" class="w-full bg-primary text-white py-4 rounded-full font-bold mt-8 shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform">
+                         Save All Updates
+                     </button>
+                 </div>
             </div>
 
              <div v-if="currentTab === 'messages'" class="space-y-4 max-w-2xl mx-auto">

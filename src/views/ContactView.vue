@@ -94,11 +94,9 @@ const sendMessage = async () => {
                 <h3 class="text-2xl font-bold text-primary/80 mb-8">Follow my adventures</h3>
                 <div class="flex flex-wrap justify-center gap-8">
                      <!-- Social links from store -->
-                    <a v-for="(link, platform) in contentStore.about.social" :key="platform" :href="link" target="_blank" class="group relative">
+                     <a v-for="(item, idx) in contentStore.about.social" :key="idx" :href="item.url" target="_blank" class="group relative">
                         <div class="size-20 bg-pastel-peach rounded-full flex items-center justify-center text-primary group-hover:scale-125 transition-all duration-300 shadow-lg border-4 border-white capitalize">
-                            <span v-if="platform === 'facebook'" class="material-symbols-outlined text-4xl">public</span>
-                            <span v-else-if="platform === 'instagram'" class="material-symbols-outlined text-4xl">photo_camera</span>
-                            <span v-else class="material-symbols-outlined text-4xl">link</span>
+                            <span class="material-symbols-outlined text-4xl">{{ item.icon }}</span>
                         </div>
                     </a>
                 </div>

@@ -41,11 +41,10 @@ export const contentStore = reactive({
     ],
     about: {
         email: "your.email@example.com",
-        social: {
-            facebook: "#",
-            instagram: "#",
-            linkedin: "#"
-        }
+        social: [
+            { platform: 'Facebook', url: '#', icon: 'public' },
+            { platform: 'Instagram', url: '#', icon: 'photo_camera' }
+        ]
     },
     messages: [] as Array<{ id: number; name: string; email: string; content: string; date: string }>
 });
