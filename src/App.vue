@@ -3,9 +3,14 @@ import { RouterView, RouterLink } from 'vue-router'
 import { contentStore } from './stores/content';
 import { ContentService } from './services/ContentService';
 import { onMounted } from 'vue';
+import { VisitorTracker } from './services/VisitorTracker';
 
-onMounted(() => {
-    ContentService.loadAll();
+onMounted(async () => {
+    // Load all content from Supabase
+    await ContentService.loadAll();
+    
+    // Track visitor (only counts unique visitors within 30 days)
+    await VisitorTracker.trackVisit(() => ContentService.incrementVisitors());
 });
 </script>
 

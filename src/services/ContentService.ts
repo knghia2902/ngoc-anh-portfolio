@@ -125,5 +125,25 @@ export const ContentService = {
     async markMessageAsRead(id: any) {
         const { error } = await supabase.from('messages').update({ isRead: true }).eq('id', id);
         return !error;
+    },
+
+    async incrementVisitors() {
+        // Get current stats
+        const { data, error: fetchError } = await supabase.from('content').select('stats').eq('id', 'main').single();
+        if (fetchError || !data?.stats) return false;
+
+        const currentVisitors = data.stats.visitors || 0;
+        const newStats = { visitors: currentVisitors + 1 };
+
+        // Update with new count
+        const { error } = await supabase
+            .from('content')
+            .update({ stats: newStats })
+            .eq('id', 'main');
+
+        if (!error) {
+            contentStore.stats.visitors = newStats.visitors;
+        }
+        return !error;
     }
 };
