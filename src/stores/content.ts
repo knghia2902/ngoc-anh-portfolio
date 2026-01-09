@@ -42,8 +42,8 @@ export const contentStore = reactive({
     about: {
         email: "your.email@example.com",
         social: [
-            { platform: 'Facebook', url: '#', icon: 'public' },
-            { platform: 'Instagram', url: '#', icon: 'photo_camera' }
+            { platform: 'Facebook', url: '#', icon: 'facebook', isSvg: true },
+            { platform: 'Instagram', url: '#', icon: 'instagram', isSvg: true }
         ]
     },
     messages: [] as Array<{ id: number; name: string; email: string; content: string; date: string }>

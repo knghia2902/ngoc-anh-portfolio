@@ -211,12 +211,12 @@ const saveChanges = async () => {
     triggerToast('✨ Changes saved to Cloud!');
 };
 
-// Social Icons Preset - Using Material Symbols that best represent each platform
+// Social Icons Preset - Brand-specific icons
 const iconPresets = [
-    { label: 'Facebook', icon: 'group' },
-    { label: 'Instagram', icon: 'photo_camera' },
+    { label: 'Facebook', icon: 'facebook', isSvg: true },
+    { label: 'Instagram', icon: 'instagram', isSvg: true },
+    { label: 'TikTok', icon: 'tiktok', isSvg: true },
     { label: 'LinkedIn', icon: 'work' },
-    { label: 'TikTok', icon: 'music_note' },
     { label: 'YouTube', icon: 'play_circle' },
     { label: 'Twitter/X', icon: 'chat_bubble' },
     { label: 'GitHub', icon: 'code' },
@@ -226,8 +226,22 @@ const iconPresets = [
     { label: 'Link', icon: 'link' }
 ];
 
+// Custom SVG icons for brands
+const customIcons: Record<string, string> = {
+    facebook: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14c-.326-.043-1.557-.14-2.857-.14C11.928 2 10 3.657 10 6.7v2.8H7v4h3V22h4v-8.5z"/></svg>',
+    instagram: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/></svg>',
+    tiktok: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.82s.51.5 0 0A4.278 4.278 0 0 1 15.54 3h-3.09v12.4a2.592 2.592 0 0 1-2.59 2.5c-1.42 0-2.6-1.16-2.6-2.6 0-1.72 1.66-3.01 3.37-2.48V9.66c-3.45-.46-6.47 2.22-6.47 5.64 0 3.33 2.76 5.7 5.69 5.7 3.14 0 5.69-2.55 5.69-5.7V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3s-1.88.09-3.24-1.48z"/></svg>'
+};
+
+const getIconHtml = (iconName: string) => {
+    if (customIcons[iconName]) {
+        return customIcons[iconName];
+    }
+    return null;
+};
+
 const addSocialLink = () => {
-    contentStore.about.social.push({ platform: 'New Link', url: '', icon: 'link' });
+    contentStore.about.social.push({ platform: 'New Link', url: '', icon: 'link', isSvg: false });
 };
 
 const removeSocialLink = (idx: number) => {
@@ -495,10 +509,11 @@ const removeSocialLink = (idx: number) => {
                                  <div class="flex flex-wrap gap-2">
                                      <button v-for="preset in iconPresets" :key="preset.icon" 
                                              type="button"
-                                             @click.prevent="link.icon = preset.icon"
+                                             @click.prevent="link.icon = preset.icon; link.isSvg = preset.isSvg || false"
                                              :class="['size-10 rounded-xl flex items-center justify-center transition-all border-2', link.icon === preset.icon ? 'bg-primary text-white scale-110 shadow-md border-primary' : 'bg-white text-primary/40 hover:bg-primary/10 border-transparent hover:border-primary/20']"
                                              :title="preset.label">
-                                         <span class="material-symbols-outlined text-xl">{{ preset.icon }}</span>
+                                         <span v-if="getIconHtml(preset.icon)" v-html="getIconHtml(preset.icon)" class="w-5 h-5"></span>
+                                         <span v-else class="material-symbols-outlined text-xl">{{ preset.icon }}</span>
                                      </button>
                                  </div>
                                  <button @click="removeSocialLink(idx)" class="text-red-400 hover:text-red-600">
