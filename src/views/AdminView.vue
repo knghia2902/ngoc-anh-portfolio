@@ -249,7 +249,14 @@ const getIconHtml = (iconName: string) => {
 
 const addSocialLink = () => {
     console.log('➕ Adding new social link');
-    contentStore.about.social.push({ platform: 'New Link', url: '', icon: 'link', isSvg: false });
+    const newLink = { 
+        id: Date.now(), // Unique ID
+        platform: 'New Link', 
+        url: '', 
+        icon: 'link', 
+        isSvg: false 
+    };
+    contentStore.about.social.push(newLink);
     console.log('Current social links:', contentStore.about.social);
 };
 
@@ -510,7 +517,7 @@ const removeSocialLink = (idx: number) => {
                      </div>
 
                      <div class="space-y-4">
-                         <div v-for="(link, idx) in contentStore.about.social" :key="idx" class="p-4 bg-background-light rounded-[2rem] border border-primary/5">
+                         <div v-for="link in contentStore.about.social" :key="link.id || link.platform" class="p-4 bg-background-light rounded-[2rem] border border-primary/5">
                              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                  <input v-model="link.platform" class="bg-white p-3 rounded-xl font-bold text-xs" placeholder="Platform Name (e.g. Facebook)"/>
                                  <input v-model="link.url" class="bg-white p-3 rounded-xl font-bold text-xs" placeholder="URL Link"/>
@@ -527,7 +534,7 @@ const removeSocialLink = (idx: number) => {
                                          <span v-else class="material-symbols-outlined text-xl">{{ preset.icon }}</span>
                                      </button>
                                  </div>
-                                 <button @click="removeSocialLink(idx)" type="button" class="text-red-400 hover:text-red-600">
+                                 <button @click="removeSocialLink(contentStore.about.social.indexOf(link))" type="button" class="text-red-400 hover:text-red-600">
                                      <span class="material-symbols-outlined">delete</span>
                                  </button>
                              </div>
