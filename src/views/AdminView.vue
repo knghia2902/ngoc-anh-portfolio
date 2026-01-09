@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import { contentStore } from '../stores/content';
 import { logout } from '../stores/auth';
 import { authService } from '../services/storage/AuthService';
+import { ContentService } from '../services/ContentService';
 
 const router = useRouter();
 const currentTab = ref('dashboard');
@@ -108,15 +109,20 @@ const handleHeroImageUpload = (e: Event) => {
 };
 
 // Toolkit Actions
-const addTool = () => {
+const addTool = async () => {
     if (newTool.value.label && newTool.value.icon) {
+        await ContentService.addTool({ ...newTool.value });
         contentStore.toolkit.push({ ...newTool.value });
         newTool.value = { icon: '', label: '' };
         triggerToast('Tool added!');
     }
 };
-const removeTool = (index: number) => {
-    contentStore.toolkit.splice(index, 1);
+const removeTool = async (index: number) => {
+    const tool = contentStore.toolkit[index];
+    if (tool) {
+        await ContentService.removeTool(tool.label);
+        contentStore.toolkit.splice(index, 1);
+    }
 };
 
 // Project Actions
@@ -129,17 +135,39 @@ const handleProjectImageUpload = (e: Event) => {
         reader.readAsDataURL(target.files[0]);
     }
 };
-const addProject = () => {
+const addProject = async () => {
     if (!newProject.value.title) return;
     if (!newProject.value.image) newProject.value.image = "https://lh3.googleusercontent.com/aida-public/AB6AXuDpyOZU63z80-gG8qighS06AKdJBzZeu9FQbZ-qPF8ziCtVwdAZRyovsPm-gxv7bwuY-nWEk-SmGiFwao3G1vwzOXIJ-lRi0xyFtPLzwHNJsOEyyqthZtYxRg6y41Dt3oiv8bYXV-KuxnemhACsYKwmxZx7I4z5aN20BrglTZdSgcPpt_sbi6jlBKNX4P2nMm530Gr0qfzVTmUN_N2v3t0m0PDsoENGj9zHbbfN0oBTDO8_zwZaMFcNoPqUL7v5PDO1EDcv6lgCqvLU";
-    contentStore.projects.push({ ...newProject.value });
+    
+    await ContentService.addProject({ ...newProject.value });
+    contentStore.projects.unshift({ ...newProject.value }); // Add to top
+    
     newProject.value = { title: '', description: '', tag: '', image: '' };
     showProjectModal.value = false;
     triggerToast('Project added!');
 };
-const deleteProject = (idx: number) => { if (confirm('Delete?')) contentStore.projects.splice(idx, 1); };
-const deleteMessage = (idx: number) => { if (confirm('Delete?')) contentStore.messages.splice(idx, 1); };
-const saveChanges = () => triggerToast('✨ Changes saved!');
+const deleteProject = async (idx: number) => { 
+    if (confirm('Delete?')) {
+        const proj = contentStore.projects[idx];
+        if (proj) {
+            await ContentService.deleteProject(proj.title);
+            contentStore.projects.splice(idx, 1);
+        }
+    }
+};
+const deleteMessage = async (idx: number) => { 
+    if (confirm('Delete?')) {
+         const msg = contentStore.messages[idx];
+         if (msg) {
+             await ContentService.deleteMessage(msg.id);
+             contentStore.messages.splice(idx, 1);
+         }
+    }
+};
+const saveChanges = async () => {
+    await ContentService.saveAll();
+    triggerToast('✨ Changes saved to Cloud!');
+};
 </script>
 
 <template>

@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { RouterView, RouterLink } from 'vue-router'
 import { contentStore } from './stores/content';
+import { ContentService } from './services/ContentService';
+import { onMounted } from 'vue';
+
+onMounted(() => {
+    ContentService.loadAll();
+});
 </script>
 
 <template>
