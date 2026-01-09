@@ -1,5 +1,9 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import FormatConverter from '../components/tools/FormatConverter.vue';
+import MergeExcelModal from '../tools/merge-excel/MergeExcelModal.vue';
+
+const showMergeModal = ref(false);
 </script>
 
 <template>
@@ -19,35 +23,37 @@ import FormatConverter from '../components/tools/FormatConverter.vue';
       <!-- Tool 1: Format Converter (Active) -->
       <FormatConverter />
 
-      <!-- Tool 2: Data Cleaner (Coming Soon) -->
-      <div class="bg-white rounded-cloud p-8 shadow-xl shadow-primary/5 border-2 border-soft-pink flex flex-col gap-6 relative overflow-hidden h-full group grayscale hover:grayscale-0 transition-all">
-        <div class="absolute -right-4 -top-4 opacity-5">
-          <span class="material-symbols-outlined text-9xl">magic_button</span>
+      <!-- Tool 2: Merge Excel (New) -->
+      <div class="bg-white rounded-cloud p-8 shadow-xl shadow-primary/5 border-2 border-soft-pink flex flex-col gap-6 relative overflow-hidden h-full group transition-all hover:-translate-y-1 hover:shadow-primary/20">
+        <div class="absolute -right-4 -top-4 opacity-10 text-primary">
+          <span class="material-symbols-outlined text-9xl">library_add</span>
         </div>
         
-        <div class="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-20 flex items-center justify-center rotate-[-5deg]">
-          <div class="bg-primary text-white font-bold py-2 px-6 rounded-full shadow-lg shadow-primary/20">
-            Sắp ra mắt! 🚀
+        <div class="flex items-center gap-4 relative z-10">
+          <div class="size-16 bg-cute-peach rounded-puffy flex items-center justify-center text-primary shadow-inner">
+            <span class="material-symbols-outlined text-4xl">merge_type</span>
+          </div>
+          <div>
+            <h3 class="text-xl font-display font-bold text-gray-800 group-hover:text-primary transition-colors">Ghép File Excel</h3>
+            <p class="text-sm opacity-60">Gộp dữ liệu từ nhiều file vào một file gốc</p>
+          </div>
+        </div>
+        
+        <div class="flex-1 space-y-4">
+          <div class="bg-yellow-50 rounded-2xl p-4 text-sm font-medium border border-yellow-200/50 text-gray-600">
+            <p>✨ Giữ nguyên định dạng file gốc</p>
+            <p>✨ Tự động nhận diện lỗi gõ sai</p>
+            <p>✨ Copy cả màu sắc và style</p>
+          </div>
+          <div class="text-sm text-gray-500 line-clamp-2">
+            Giúp cậu tổng hợp báo cáo chỉ trong 30 giây. Không cần copy paste thủ công nữa!
           </div>
         </div>
 
-        <div class="flex items-center gap-4 relative z-10 opacity-40 group-hover:opacity-100 transition-opacity">
-          <div class="size-16 bg-cute-lavender rounded-puffy flex items-center justify-center text-primary">
-            <span class="material-symbols-outlined text-4xl">flare</span>
-          </div>
-          <div>
-            <h3 class="text-xl font-display font-bold">Làm Sạch Dữ Liệu</h3>
-            <p class="text-sm opacity-60">Xoá khoảng trắng và lỗi định dạng</p>
-          </div>
-        </div>
-        
-        <div class="flex-1 space-y-4 opacity-30 group-hover:opacity-100 transition-opacity">
-          <div class="bg-pastel-pink/50 rounded-2xl p-4 text-sm font-medium border border-soft-pink/30 italic">
-            "Hãy dán dữ liệu thô vào đây để Ánh dọn dẹp giúp cậu nha..."
-          </div>
-          <textarea readonly class="w-full bg-cute-peach/20 border-2 border-dashed border-primary/20 rounded-2xl p-4 text-sm min-h-[120px] outline-none pointer-events-none" placeholder="Nhập văn bản tại đây..."></textarea>
-        </div>
-        <button disabled class="puffy-button py-4 w-full opacity-50">Biến hoá ngay ✨</button>
+        <button @click="showMergeModal = true" class="puffy-button py-4 w-full bg-primary text-white shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all flex items-center justify-center gap-2">
+          <span>Bắt đầu ngay</span>
+          <span class="material-symbols-outlined text-lg">arrow_forward</span>
+        </button>
       </div>
 
     </div>
@@ -76,5 +82,8 @@ import FormatConverter from '../components/tools/FormatConverter.vue';
         <p class="text-xs opacity-60">Món quà từ Ánh giúp công việc của cậu trở nên thư thái hơn.</p>
       </div>
     </div>
+
+    <!-- Modals -->
+    <MergeExcelModal :isOpen="showMergeModal" @close="showMergeModal = false" />
   </main>
 </template>
