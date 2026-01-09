@@ -186,22 +186,27 @@ const reset = () => {
           </div>
         </div>
 
-        <!-- Action or Result -->
-        <div v-if="!conversionResult">
+        <!-- Action Button (Unified) -->
+        <div>
           <button 
+            v-if="!conversionResult"
             @click="convertFile" 
-            class="puffy-button py-4 w-full flex items-center justify-center gap-2 group"
+            class="puffy-button py-4 w-full flex items-center justify-center gap-2 group relative overflow-hidden"
             :disabled="isLoading"
           >
             <span v-if="isLoading" class="animate-spin material-symbols-outlined">progress_activity</span>
             <span v-else class="group-hover:rotate-12 transition-transform material-symbols-outlined">magic_button</span>
-            {{ isLoading ? 'Đang hô biến...' : 'Biến hoá ngay' }}
+            <span>{{ isLoading ? 'Đang hô biến...' : 'Biến hoá ngay' }}</span>
+            <span v-if="!isLoading" class="absolute right-6 opacity-40 group-hover:opacity-100 transition-opacity">✨</span>
           </button>
-        </div>
-        <div v-else>
-          <button @click="download" class="puffy-button py-4 w-full bg-pastel-blue text-primary flex items-center justify-center gap-2">
-            <span class="material-symbols-outlined">download</span>
-            Tải file đã biến hoá ✨
+          
+          <button 
+            v-else
+            @click="download" 
+            class="puffy-button py-4 w-full flex items-center justify-center gap-2 group bg-gradient-to-r from-primary to-[#ff85a2] shadow-lg shadow-primary/20"
+          >
+            <span class="material-symbols-outlined group-hover:bounce transition-transform">download</span>
+            <span>Tải file về máy ✨</span>
           </button>
         </div>
       </div>
