@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { contentStore } from '../stores/content';
 import { logout } from '../stores/auth';
@@ -36,12 +36,35 @@ const triggerToast = (msg: string) => {
 }
 
 // Notification Dropdown
+// Notification Dropdown
 const showNotifications = ref(false);
-const notifications = ref([
-    { id: 1, text: "System updated successfully", time: "2 min ago" },
-    { id: 2, text: "New project 'PinkyPal' added", time: "1 hour ago" },
-    { id: 3, text: "Portfolio views reached 1,000", time: "1 day ago" }
-]);
+
+const getRelativeTime = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diff = Math.floor((now.getTime() - date.getTime()) / 1000); // seconds
+    
+    if (diff < 60) return 'Just now';
+    if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
+    return `${Math.floor(diff / 86400)} days ago`;
+};
+
+const notifications = computed(() => {
+    // Map messages to notifications
+    const msgs = contentStore.messages.slice(0, 5).map(msg => ({
+        id: msg.id,
+        text: `New message from ${msg.name}`,
+        time: getRelativeTime(msg.date),
+        isRead: false // Future: track read status
+    }));
+    
+    // Add some system notifications if needed, or just show messages
+    if (msgs.length === 0) {
+        return [{ id: 'sys', text: "No new notifications", time: "" }];
+    }
+    return msgs;
+});
 
 // --- Image Drag Logic ---
 const isDragging = ref(false);
@@ -230,7 +253,7 @@ const saveChanges = async () => {
             <div class="flex items-center gap-4 relative">
                  <button @click="showNotifications = !showNotifications" class="size-10 rounded-full bg-white flex items-center justify-center shadow-sm hover:scale-105 transition-transform text-primary relative z-20">
                     <span class="material-symbols-outlined">notifications</span>
-                    <span class="absolute top-2 right-2 size-2 bg-red-400 rounded-full border border-white"></span>
+                    <span v-if="notifications.length > 0 && notifications[0]?.id !== 'sys'" class="absolute top-2 right-2 size-2 bg-red-400 rounded-full border border-white"></span>
                 </button>
                 <div v-if="showNotifications" class="absolute top-12 right-10 w-80 bg-white rounded-[2rem] shadow-xl border border-primary/10 overflow-hidden z-30">
                     <div class="p-4 border-b border-gray-100 font-bold text-sm">Notifications</div>
