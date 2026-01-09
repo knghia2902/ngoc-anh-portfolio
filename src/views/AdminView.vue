@@ -20,7 +20,8 @@ const showLogoutModal = ref(false);
 
 // Project Modal
 const showProjectModal = ref(false);
-const newProject = ref({ title: '', description: '', tag: '', image: '' });
+const isEditingProject = ref(false);
+const newProject = ref({ id: '', title: '', description: '', tag: '', image: '' });
 
 // Toolkit Editor State
 const showToolkitConfig = ref(false);
@@ -162,12 +163,30 @@ const addProject = async () => {
     if (!newProject.value.title) return;
     if (!newProject.value.image) newProject.value.image = "https://lh3.googleusercontent.com/aida-public/AB6AXuDpyOZU63z80-gG8qighS06AKdJBzZeu9FQbZ-qPF8ziCtVwdAZRyovsPm-gxv7bwuY-nWEk-SmGiFwao3G1vwzOXIJ-lRi0xyFtPLzwHNJsOEyyqthZtYxRg6y41Dt3oiv8bYXV-KuxnemhACsYKwmxZx7I4z5aN20BrglTZdSgcPpt_sbi6jlBKNX4P2nMm530Gr0qfzVTmUN_N2v3t0m0PDsoENGj9zHbbfN0oBTDO8_zwZaMFcNoPqUL7v5PDO1EDcv6lgCqvLU";
     
-    await ContentService.addProject({ ...newProject.value });
-    contentStore.projects.unshift({ ...newProject.value }); // Add to top
+    if (isEditingProject.value && newProject.value.id) {
+        // Update existing
+        await ContentService.updateProject({ ...newProject.value });
+        const idx = contentStore.projects.findIndex((p: any) => p.id === newProject.value.id);
+        if (idx !== -1) contentStore.projects[idx] = { ...newProject.value };
+        triggerToast('Project updated!');
+    } else {
+        // Create new
+        // Remove ID if empty to let DB generate it, but we need strictly typed object or omit logic. 
+        // For simplicity, we create specific object
+        const { id, ...createPayload } = newProject.value;
+        const created = await ContentService.addProject(createPayload);
+        if (created) contentStore.projects.unshift(created);
+        triggerToast('Project added!');
+    }
     
-    newProject.value = { title: '', description: '', tag: '', image: '' };
+    newProject.value = { id: '', title: '', description: '', tag: '', image: '' };
     showProjectModal.value = false;
-    triggerToast('Project added!');
+};
+
+const editProject = (project: any) => {
+    newProject.value = { ...project };
+    isEditingProject.value = true;
+    showProjectModal.value = true;
 };
 const deleteProject = async (idx: number) => { 
     if (confirm('Delete?')) {
@@ -258,7 +277,9 @@ const saveChanges = async () => {
                 <div v-if="showNotifications" class="absolute top-12 right-10 w-80 bg-white rounded-[2rem] shadow-xl border border-primary/10 overflow-hidden z-30">
                     <div class="p-4 border-b border-gray-100 font-bold text-sm">Notifications</div>
                     <div class="max-h-60 overflow-y-auto">
-                        <div v-for="notif in notifications" :key="notif.id" class="p-4 hover:bg-gray-50 border-b border-gray-50 last:border-0 cursor-pointer">
+                        <div v-for="notif in notifications" :key="notif.id" 
+                             @click="currentTab = 'messages'; showNotifications = false"
+                             class="p-4 hover:bg-gray-50 border-b border-gray-50 last:border-0 cursor-pointer">
                             <p class="text-xs font-bold">{{ notif.text }}</p>
                             <p class="text-[10px] opacity-50 mt-1">{{ notif.time }}</p>
                         </div>
@@ -403,7 +424,7 @@ const saveChanges = async () => {
 
              <!-- Other Tabs remain similar logic, just ensure they are present (omitted for brevity if no changes, but I will include them to be safe) -->
             <div v-if="currentTab === 'projects'" class="space-y-6">
-                <button @click="showProjectModal = true" class="bg-primary text-white px-6 py-3 rounded-full font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-transform flex items-center gap-2 ml-auto">
+                <button @click="showProjectModal = true; isEditingProject = false; newProject = { id: '', title: '', description: '', tag: '', image: '' }" class="bg-primary text-white px-6 py-3 rounded-full font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-transform flex items-center gap-2 ml-auto">
                     <span class="material-symbols-outlined">add</span> New Project
                 </button>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -412,6 +433,7 @@ const saveChanges = async () => {
                         <div class="flex-1">
                             <h4 class="font-bold text-lg truncate">{{ project.title }}</h4>
                             <div class="flex gap-2 mt-2">
+                                <button class="text-xs font-bold text-primary hover:text-primary/80" @click="editProject(project)">Edit</button>
                                 <button class="text-xs font-bold text-red-400 hover:text-red-500" @click="deleteProject(index)">Delete</button>
                             </div>
                         </div>
@@ -444,14 +466,14 @@ const saveChanges = async () => {
         <div v-if="showProjectModal" class="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div class="bg-white w-full max-w-lg rounded-[2.5rem] p-8 shadow-2xl relative">
                 <button @click="showProjectModal = false" class="absolute top-6 right-6 text-gray-400"><span class="material-symbols-outlined">close</span></button>
-                <h2 class="text-2xl font-bold mb-6">New Project</h2>
+                <h2 class="text-2xl font-bold mb-6">{{ isEditingProject ? 'Edit Project' : 'New Project' }}</h2>
                 <div class="space-y-4">
                      <input v-model="newProject.title" class="w-full bg-background-light rounded-2xl p-4 font-bold" placeholder="Title" />
                      <input v-model="newProject.tag" class="w-full bg-background-light rounded-2xl p-4 font-bold" placeholder="Tag" />
                      <textarea v-model="newProject.description" class="w-full bg-background-light rounded-2xl p-4" rows="3" placeholder="Desc..."></textarea>
                      <input type="file" ref="projectFileInput" accept="image/*" class="hidden" @change="handleProjectImageUpload" />
                      <div class="flex items-center gap-4"><button @click="triggerProjectImageUpload" class="text-primary font-bold text-sm">Upload Cover</button></div>
-                     <button @click="addProject" class="w-full bg-primary text-white py-4 rounded-full font-bold mt-4">Create</button>
+                     <button @click="addProject" class="w-full bg-primary text-white py-4 rounded-full font-bold mt-4">{{ isEditingProject ? 'Save Changes' : 'Create' }}</button>
                 </div>
             </div>
         </div>

@@ -25,6 +25,7 @@ export const ContentService = {
             const { data: projectsData } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
             if (projectsData) {
                 contentStore.projects = projectsData.map((p: any) => ({
+                    id: p.id,
                     title: p.title,
                     description: p.description,
                     tag: p.tag,
@@ -86,8 +87,14 @@ export const ContentService = {
     // Specific Actions
     async addProject(project: any) {
         const { data, error } = await supabase.from('projects').insert([project]).select();
-        if (!error && data) return true;
-        return false;
+        if (!error && data) return data[0]; // Return the full object including ID
+        return null;
+    },
+
+    async updateProject(project: any) {
+        const { id, ...updates } = project;
+        const { error } = await supabase.from('projects').update(updates).eq('id', id);
+        return !error;
     },
 
     async deleteProject(title: string) {

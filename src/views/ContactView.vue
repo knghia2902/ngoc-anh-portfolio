@@ -39,7 +39,13 @@ const sendMessage = () => {
         <main class="flex-1 flex flex-col max-w-[1000px] mx-auto px-4 md:px-10 py-16 items-center">
             <div class="text-center mb-12">
                 <h1 class="text-4xl md:text-5xl font-bold text-primary mb-4">Gửi lời nhắn cho mình nhé!</h1>
-                <p class="text-lg text-[#1b0d11]/70 font-medium">I'd love to hear from you and start something magical together ✨</p>
+                <p class="text-lg text-[#1b0d11]/70 font-medium mb-6">I'd love to hear from you and start something magical together ✨</p>
+                
+                <!-- Explicit Contact Info -->
+                 <div class="inline-flex flex-col items-center gap-2 bg-white/50 p-4 rounded-2xl border border-white backdrop-blur-sm">
+                    <p class="text-sm font-bold text-primary/60">CONTACT DIRECTLY</p>
+                    <p class="text-lg font-bold text-primary select-all">{{ contentStore.about.email }}</p>
+                </div>
             </div>
             
             <div class="relative w-full max-w-2xl bg-white rounded-2xl p-8 md:p-12 love-letter-shadow border-t-[12px] border-pastel-pink transition-all">

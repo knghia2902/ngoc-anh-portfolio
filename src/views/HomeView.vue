@@ -85,17 +85,21 @@ import { contentStore } from '../stores/content';
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 px-4">
-            <div v-for="(project, index) in contentStore.projects" :key="index" class="group cursor-pointer">
-                <div class="aspect-[4/3] bg-pastel-peach/20 rounded-[2rem] overflow-hidden mb-6 relative group-hover:shadow-lg transition-all duration-300">
-                    <div class="absolute top-4 right-4 bg-white/90 backdrop-blur px-4 py-1.5 rounded-full z-10 shadow-sm">
-                        <span class="text-xs font-bold text-primary">{{ project.tag }}</span>
-                    </div>
-                    <div class="size-full bg-cover bg-center group-hover:scale-105 transition-transform duration-700" :style="{ backgroundImage: `url(${project.image})` }"></div>
+            <div v-for="(project, index) in contentStore.projects" :key="index" class="bg-white rounded-[2.5rem] p-6 pb-8 text-center border border-primary/5 hover:-translate-y-2 transition-transform duration-300 shadow-sm hover:shadow-xl">
+                 <!-- Blob Masked Image -->
+                <div class="relative size-full aspect-[4/3] rounded-[2rem] overflow-hidden mb-6 flex items-center justify-center">
+                     <div class="absolute inset-0 bg-pastel-peach/10"></div>
+                     <div class="size-[280px] blob-shape overflow-hidden bg-cover bg-center border-4 border-white shadow-lg mx-auto" :style="{ backgroundImage: `url(${project.image})` }"></div>
                 </div>
-                <div>
-                    <h3 class="text-xl font-bold mb-2 group-hover:text-primary transition-colors">{{ project.title }}</h3>
-                    <p class="text-[#1b0d11]/60 font-medium leading-relaxed">{{ project.description }}</p>
+                
+                <!-- Tag -->
+                <div class="inline-block px-4 py-1.5 bg-soft-pink/20 rounded-full mb-4">
+                    <span class="text-xs font-bold text-primary uppercase tracking-wider">{{ project.tag }}</span>
                 </div>
+
+                <h3 class="text-2xl font-bold mb-3 text-primary">{{ project.title }}</h3>
+                <p class="text-[#1b0d11]/60 font-medium leading-relaxed max-w-sm mx-auto">{{ project.description }}</p>
+                <div class="mt-4"><button class="text-sm font-bold text-primary hover:underline">View Details</button></div>
             </div>
         </div>
     </section>
