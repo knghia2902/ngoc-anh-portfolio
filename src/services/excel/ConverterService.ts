@@ -73,28 +73,48 @@ export class ConverterService {
                 };
             }
 
-            let csvContent = '';
+            const rows: string[][] = [];
             worksheet.eachRow((row) => {
                 const values = row.values as any[];
                 // Skip first element (ExcelJS adds undefined at index 0)
                 const rowData = values.slice(1).map(cell => {
                     if (cell === null || cell === undefined) return '';
-                    // Escape quotes and wrap in quotes if contains comma
-                    const str = String(cell);
-                    if (str.includes(',') || str.includes('"') || str.includes('\n')) {
-                        return `"${str.replace(/"/g, '""')}"`;
+
+                    // Handle different cell types
+                    let cellValue = '';
+                    if (typeof cell === 'object' && cell.text) {
+                        // Rich text
+                        cellValue = cell.text;
+                    } else if (typeof cell === 'object' && cell.result !== undefined) {
+                        // Formula
+                        cellValue = String(cell.result);
+                    } else {
+                        cellValue = String(cell);
                     }
-                    return str;
+
+                    return cellValue;
                 });
-                csvContent += rowData.join(',') + '\n';
+                rows.push(rowData);
             });
+
+            // Convert to CSV with proper escaping
+            const csvContent = rows.map(row => {
+                return row.map(cell => {
+                    // Check if cell needs quoting
+                    if (cell.includes(',') || cell.includes('"') || cell.includes('\n') || cell.includes('\r')) {
+                        // Escape quotes by doubling them
+                        return `"${cell.replace(/"/g, '""')}"`;
+                    }
+                    return cell;
+                }).join(',');
+            }).join('\r\n'); // Use CRLF for better compatibility
 
             const filename = file.name.replace(/\.[^/.]+$/, '') + '.csv';
             return {
                 success: true,
-                data: csvContent,
+                data: '\uFEFF' + csvContent, // Add BOM for UTF-8 encoding
                 filename,
-                mimeType: 'text/csv'
+                mimeType: 'text/csv;charset=utf-8'
             };
         } catch (error) {
             return {
