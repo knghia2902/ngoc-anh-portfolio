@@ -207,8 +207,15 @@ const deleteMessage = async (idx: number) => {
     }
 };
 const saveChanges = async () => {
-    await ContentService.saveAll();
-    triggerToast('✨ Changes saved to Cloud!');
+    console.log('💾 Saving changes...', { social: contentStore.about.social });
+    const success = await ContentService.saveAll();
+    if (success) {
+        triggerToast('✨ Changes saved to Cloud!');
+        console.log('✅ Save successful');
+    } else {
+        triggerToast('❌ Save failed!');
+        console.error('❌ Save failed');
+    }
 };
 
 // Social Icons Preset - Brand-specific icons
@@ -241,11 +248,15 @@ const getIconHtml = (iconName: string) => {
 };
 
 const addSocialLink = () => {
+    console.log('➕ Adding new social link');
     contentStore.about.social.push({ platform: 'New Link', url: '', icon: 'link', isSvg: false });
+    console.log('Current social links:', contentStore.about.social);
 };
 
 const removeSocialLink = (idx: number) => {
+    console.log('🗑️ Removing social link at index:', idx);
     contentStore.about.social.splice(idx, 1);
+    console.log('Remaining social links:', contentStore.about.social);
 };
 </script>
 
@@ -493,7 +504,7 @@ const removeSocialLink = (idx: number) => {
                          <h3 class="text-lg font-bold flex items-center gap-2 text-[#1b0d11]">
                              <span class="material-symbols-outlined text-primary">share</span> Social Links
                          </h3>
-                         <button @click="addSocialLink" class="text-primary text-sm font-bold flex items-center gap-1 hover:underline">
+                         <button @click="addSocialLink" type="button" class="text-primary text-sm font-bold flex items-center gap-1 hover:underline">
                              <span class="material-symbols-outlined text-sm">add</span> Add New
                          </button>
                      </div>
@@ -516,7 +527,7 @@ const removeSocialLink = (idx: number) => {
                                          <span v-else class="material-symbols-outlined text-xl">{{ preset.icon }}</span>
                                      </button>
                                  </div>
-                                 <button @click="removeSocialLink(idx)" class="text-red-400 hover:text-red-600">
+                                 <button @click="removeSocialLink(idx)" type="button" class="text-red-400 hover:text-red-600">
                                      <span class="material-symbols-outlined">delete</span>
                                  </button>
                              </div>
