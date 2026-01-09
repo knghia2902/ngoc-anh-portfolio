@@ -16,7 +16,7 @@ export const contentStore = reactive({
         sparkles: false
     },
     stats: {
-        visitors: 1284
+        visitors: 0 // Will be tracked via analytics
     },
     toolkit: [
         { icon: 'palette', label: 'UI Design' },
@@ -46,5 +46,5 @@ export const contentStore = reactive({
             { id: 2, platform: 'Instagram', url: '#', icon: 'instagram', isSvg: true }
         ]
     },
-    messages: [] as Array<{ id: number; name: string; email: string; content: string; date: string }>
+    messages: [] as Array<{ id: number; name: string; email: string; content: string; date: string; isRead?: boolean }>
 });

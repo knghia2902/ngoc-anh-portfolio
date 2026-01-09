@@ -120,5 +120,10 @@ export const ContentService = {
     async deleteMessage(id: any) {
         const { error } = await supabase.from('messages').delete().eq('id', id);
         return !error;
+    },
+
+    async markMessageAsRead(id: any) {
+        const { error } = await supabase.from('messages').update({ isRead: true }).eq('id', id);
+        return !error;
     }
 };

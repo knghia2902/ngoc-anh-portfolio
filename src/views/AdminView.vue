@@ -52,20 +52,35 @@ const getRelativeTime = (dateStr: string) => {
 };
 
 const notifications = computed(() => {
-    // Map messages to notifications
+    // Map messages to notifications with unread status
     const msgs = contentStore.messages.slice(0, 5).map(msg => ({
         id: msg.id,
         text: `New message from ${msg.name}`,
         time: getRelativeTime(msg.date),
-        isRead: false // Future: track read status
+        isRead: msg.isRead || false,
+        messageId: msg.id
     }));
     
-    // Add some system notifications if needed, or just show messages
     if (msgs.length === 0) {
-        return [{ id: 'sys', text: "No new notifications", time: "" }];
+        return [{ id: 'sys' as any, text: "No new notifications", time: "", isRead: true, messageId: null }];
     }
     return msgs;
 });
+
+const unreadCount = computed(() => {
+    return contentStore.messages.filter(m => !m.isRead).length;
+});
+
+const markAsRead = async (messageId: any) => {
+    const msg = contentStore.messages.find(m => m.id === messageId);
+    if (msg && !msg.isRead) {
+        msg.isRead = true;
+        // Update in Supabase
+        await ContentService.markMessageAsRead(messageId);
+    }
+    currentTab.value = 'messages';
+    showNotifications.value = false;
+};
 
 // --- Image Drag Logic ---
 const isDragging = ref(false);
@@ -327,16 +342,24 @@ const removeSocialLink = (idx: number) => {
             <div class="flex items-center gap-4 relative">
                  <button @click="showNotifications = !showNotifications" class="size-10 rounded-full bg-white flex items-center justify-center shadow-sm hover:scale-105 transition-transform text-primary relative z-20">
                     <span class="material-symbols-outlined">notifications</span>
-                    <span v-if="notifications.length > 0 && notifications[0]?.id !== 'sys'" class="absolute top-2 right-2 size-2 bg-red-400 rounded-full border border-white"></span>
+                    <span v-if="unreadCount > 0" class="absolute -top-1 -right-1 size-5 bg-red-400 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">{{ unreadCount }}</span>
                 </button>
                 <div v-if="showNotifications" class="absolute top-12 right-10 w-80 bg-white rounded-[2rem] shadow-xl border border-primary/10 overflow-hidden z-30">
-                    <div class="p-4 border-b border-gray-100 font-bold text-sm">Notifications</div>
+                    <div class="p-4 border-b border-gray-100 font-bold text-sm flex justify-between items-center">
+                        <span>Notifications</span>
+                        <span v-if="unreadCount > 0" class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full">{{ unreadCount }} new</span>
+                    </div>
                     <div class="max-h-60 overflow-y-auto">
                         <div v-for="notif in notifications" :key="notif.id" 
-                             @click="currentTab = 'messages'; showNotifications = false"
-                             class="p-4 hover:bg-gray-50 border-b border-gray-50 last:border-0 cursor-pointer">
-                            <p class="text-xs font-bold">{{ notif.text }}</p>
-                            <p class="text-[10px] opacity-50 mt-1">{{ notif.time }}</p>
+                             @click="notif.id !== 'sys' ? markAsRead(notif.messageId) : null"
+                             :class="['p-4 border-b border-gray-50 last:border-0 cursor-pointer transition-colors', notif.isRead ? 'bg-white hover:bg-gray-50' : 'bg-blue-50 hover:bg-blue-100']">
+                            <div class="flex items-start gap-2">
+                                <span v-if="!notif.isRead" class="size-2 bg-blue-500 rounded-full mt-1.5 shrink-0"></span>
+                                <div class="flex-1">
+                                    <p class="text-xs font-bold" :class="notif.isRead ? 'text-gray-600' : 'text-gray-900'">{{ notif.text }}</p>
+                                    <p class="text-[10px] opacity-50 mt-1">{{ notif.time }}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
